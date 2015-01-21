@@ -20,7 +20,6 @@
     "gulp-shell": "^0.2.11",
     "gulp-util": "^3.0.2",
     "merge-stream": "^0.1.7",
-    "reactify": "^0.17.1",
     "vinyl-source-stream": "^1.0.0",
     "watchify": "^2.2.1"
   },
