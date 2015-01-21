@@ -44,8 +44,10 @@ For a complete example see [Thinkmill/touchstone-starter](https://github.com/Thi
 ## Usage
 
 ```
-npm install --save-dev touchstonejs-tasks
+npm install --save-dev touchstonejs-tasks gulp reactify
 ```
+
+**Note** You need to install `gulp` and `reactify` in your `devDependencies` along with `touchstonejs-tasks`, because they must exist in the root `node_modules` directory of your project.
 
 In your gulpfile, call this package with your `gulp` instance and `config`. It will add the tasks to gulp for you. You can also add your own tasks if you want.
 
