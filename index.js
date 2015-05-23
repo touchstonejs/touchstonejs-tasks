@@ -14,15 +14,6 @@ var watchify = require('watchify');
 
 
 /**
- * Get the package.json from the project and configure the common
- * packages to be bundled
- */
-
-var projectPackage = require(module.parent.paths[0] + '/package.json');
-var commonPackages = projectPackage.appDependencies || ['touchstonejs', 'react', 'react/addons'];
-
-
-/**
  * Check that a compatible version of gulp is available in the project
  */
 
@@ -145,27 +136,37 @@ module.exports = function(gulp) {
 			});
 	}
 
-	function buildApp(watch) {
+	function buildApp(dev) {
 		
-		var opts = watch ? watchify.args : {};
-		
-		opts.debug = watch ? true : false;
-		opts.hasExports = true;
+		var opts = dev ? {
+			cache: {},
+			packageCache: {},
+			debug: process.env.NODE_ENV === 'production'
+		} : {};
 		
 		var src = './src/js';
 		var dest = './www/js';
 		var name = 'app.js';
 		
-		var bundle = browserify(opts)
+		var appBundle = browserify(opts)
 			.add([src, name].join('/'))
 			.transform(babelify)
 			.transform(brfs);
+
+		var reactBundle = browserify();
+		['react','react/addons'].forEach(function(pkg) {
+			appBundle.exclude(pkg);
+			reactBundle.require(pkg);
+		});
 		
-		if (watch) {
-			watchBundle(bundle, name, dest);
+		if (dev) {
+			watchBundle(appBundle, name, dest);
 		}
 		
-		return doBundle(bundle, name, dest);
+		return merge(
+			doBundle(reactBundle, 'react.js', dest),
+			doBundle(appBundle, name, dest)
+		);
 		
 	}
 
