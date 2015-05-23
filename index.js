@@ -1,16 +1,26 @@
-var del = require('del'),
-	gulp = require('gulp'),
-	gutil = require('gulp-util'),
-	less = require('gulp-less'),
-	plumber = require('gulp-plumber'),
-	shell = require('gulp-shell'),
-	browserify = require('browserify'),
-	brfs = require('brfs'),
-	watchify = require('watchify'),
-	reactify = require('reactify'),
-	source = require('vinyl-source-stream'),
-	merge = require('merge-stream'),
-	chalk = require('chalk');
+var babelify = require('babelify');
+var brfs = require('brfs');
+var browserify = require('browserify');
+var chalk = require('chalk');
+var del = require('del');
+var gulp = require('gulp');
+var gutil = require('gulp-util');
+var less = require('gulp-less');
+var merge = require('merge-stream');
+var plumber = require('gulp-plumber');
+var shell = require('gulp-shell');
+var source = require('vinyl-source-stream');
+var watchify = require('watchify');
+
+
+/**
+ * Get the package.json from the project and configure the common
+ * packages to be bundled
+ */
+
+var projectPackage = require(module.parent.paths[0] + '/package.json');
+var commonPackages = projectPackage.appDependencies || ['touchstonejs', 'react', 'react/addons'];
+
 
 /**
  * Check that a compatible version of gulp is available in the project
@@ -50,6 +60,7 @@ try {
 } catch(e) {
 	// Assume gulp has been loaded from ../node_modules and it matches the requirements.
 }
+
 
 /**
  * This package exports a function that binds tasks to a gulp instance
@@ -109,29 +120,29 @@ module.exports = function(gulp) {
 
 	function doBundle(target, name, dest) {
 		return target.bundle()
-		.on('error', function(e) {
-			gutil.log('Browserify Error', e);
-		})
-		.pipe(source(name))
-		.pipe(gulp.dest(dest));
+			.on('error', function(e) {
+				gutil.log('Browserify Error', e);
+			})
+			.pipe(source(name))
+			.pipe(gulp.dest(dest));
 	}
 
 	function watchBundle(target, name, dest) {
 		return watchify(target)
-		.on('update', function (scriptIds) {
-			scriptIds = scriptIds
-			.filter(function(i) { return i.substr(0,2) !== './' })
-			.map(function(i) { return chalk.blue(i.replace(__dirname, '')) });
-			if (scriptIds.length > 1) {
-				gutil.log(scriptIds.length + ' Scripts updated:\n* ' + scriptIds.join('\n* ') + '\nrebuilding...');
-			} else {
-				gutil.log(scriptIds[0] + ' updated, rebuilding...');
-			}
-			doBundle(target, name, dest);
-		})
-		.on('time', function (time) {
-			gutil.log(chalk.green(name + ' built in ' + (Math.round(time / 10) / 100) + 's'));
-		});
+			.on('update', function (scriptIds) {
+				scriptIds = scriptIds
+				.filter(function(i) { return i.substr(0,2) !== './' })
+				.map(function(i) { return chalk.blue(i.replace(__dirname, '')) });
+				if (scriptIds.length > 1) {
+					gutil.log(scriptIds.length + ' Scripts updated:\n* ' + scriptIds.join('\n* ') + '\nrebuilding...');
+				} else {
+					gutil.log(scriptIds[0] + ' updated, rebuilding...');
+				}
+				doBundle(target, name, dest);
+			})
+			.on('time', function (time) {
+				gutil.log(chalk.green(name + ' built in ' + (Math.round(time / 10) / 100) + 's'));
+			});
 	}
 
 	function buildApp(watch) {
@@ -141,9 +152,9 @@ module.exports = function(gulp) {
 		opts.debug = watch ? true : false;
 		opts.hasExports = true;
 		
-		var src = './src/js',
-		dest = './www/js',
-		name = 'app.js';
+		var src = './src/js';
+		var dest = './www/js';
+		var name = 'app.js';
 		
 		var bundle = browserify(opts)
 			.add([src, name].join('/'))
@@ -177,6 +188,7 @@ module.exports = function(gulp) {
 
 	gulp.task('dev', ['watch', 'serve']);
 
+
 	/**
 	* Cordova
 	*/
@@ -185,12 +197,6 @@ module.exports = function(gulp) {
 		return gulp.src('')
 		.pipe(plumber())
 		.pipe(shell(['cordova prepare'], { cwd: __dirname }));
-	});
-
-	gulp.task('android', ['prepare'], function() {
-		return gulp.src('')
-		.pipe(plumber())
-		.pipe(shell(['cordova run android'], { cwd: __dirname }));
 	});
 	
 }
