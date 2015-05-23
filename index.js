@@ -147,7 +147,7 @@ module.exports = function(gulp) {
 		
 		var bundle = browserify(opts)
 			.add([src, name].join('/'))
-			.transform(reactify)
+			.transform(babelify)
 			.transform(brfs);
 		
 		if (watch) {

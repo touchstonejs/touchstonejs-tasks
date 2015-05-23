@@ -10,6 +10,7 @@
     "url": "https://github.com/JedWatson/touchstonejs-tasks.git"
   },
   "dependencies": {
+    "babelify": "^6.1.1",
     "brfs": "^1.4.0",
     "browserify": "^10.2.1",
     "chalk": "^1.0.0",
@@ -20,7 +21,6 @@
     "gulp-shell": "^0.4.1",
     "gulp-util": "^3.0.4",
     "merge-stream": "^0.1.7",
-    "reactify": "^1.1.1",
     "vinyl-source-stream": "^1.1.0",
     "watchify": "^3.2.1"
   },
