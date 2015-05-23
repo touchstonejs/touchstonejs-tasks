@@ -121,7 +121,7 @@ module.exports = function(gulp) {
 	function doBundle(target, name, dest) {
 		return target.bundle()
 			.on('error', function(e) {
-				gutil.log('Browserify Error', e);
+				gutil.log('Browserify Error', e.message);
 			})
 			.pipe(source(name))
 			.pipe(gulp.dest(dest));
