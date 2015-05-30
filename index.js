@@ -141,7 +141,7 @@ module.exports = function(gulp) {
 		var opts = dev ? {
 			cache: {},
 			packageCache: {},
-			debug: process.env.NODE_ENV === 'production'
+			debug: process.env.NODE_ENV !== 'production'
 		} : {};
 		
 		var src = './src/js';
