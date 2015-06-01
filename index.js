@@ -3,7 +3,6 @@ var brfs = require('brfs');
 var browserify = require('browserify');
 var chalk = require('chalk');
 var del = require('del');
-var gulp = require('gulp');
 var gutil = require('gulp-util');
 var less = require('gulp-less');
 var merge = require('merge-stream');
@@ -11,34 +10,6 @@ var plumber = require('gulp-plumber');
 var shell = require('gulp-shell');
 var source = require('vinyl-source-stream');
 var watchify = require('watchify');
-
-
-/**
- * Check that a compatible version of gulp is available in the project
- */
-
-function fatal(err) {
-	var msg = '\n\n';
-	if (Array.isArray(err)) {
-		err.forEach(function(i) {
-			msg += i + '\n\n';
-		});
-	} else {
-		msg += (err || 'Fatal error, bailing.') + '\n\n';
-	}
-	console.log(msg);
-	process.exit(1);
-}
-
-try {
-	var projectGulpVersion = require(module.parent.paths[0] + '/gulp/package.json').version;
-} catch(e) {
-	// If we can't find gulp in the parent project, it's a fatal problem.
-	fatal(
-		'You do not seem to have Gulp installed in your project.',
-		'Please add gulp ^' + packageGulpVersion + ' to your package.json, npm install and try again.'
-	);
-}
 
 /**
  * This package exports a function that binds tasks to a gulp instance
