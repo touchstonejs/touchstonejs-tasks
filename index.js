@@ -39,19 +39,6 @@ try {
 		'Please add gulp ^' + packageGulpVersion + ' to your package.json, npm install and try again.'
 	);
 }
-try {
-	// Check to make sure the local gulp and the project gulp match.
-	var packageGulpVersion = require('./node_modules/gulp/package.json').version;
-	if (semver.satisfies(projectGulpVersion, '^' + packageGulpVersion)) {
-		fatal(
-			'You do not have the correct version of Gulp installed in your project.',
-			'Please add gulp ^' + packageGulpVersion + ' to your package.json, npm install and try again.'
-		);
-	}
-} catch(e) {
-	// Assume gulp has been loaded from ../node_modules and it matches the requirements.
-}
-
 
 /**
  * This package exports a function that binds tasks to a gulp instance
