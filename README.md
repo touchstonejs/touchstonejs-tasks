@@ -1,6 +1,9 @@
 touchstonejs-tasks
 ==================
 
+### README out of date - please see #4 
+
+
 This package provides common gulp tasks for TouchstoneJS projects with:
 
 * Browserify for transforming JSX and creating distribution builds
