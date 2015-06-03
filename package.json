@@ -31,8 +31,8 @@
     "happiness": "*"
   },
   "scripts": {
-		"lint": "happiness",
-		"unit": "echo \"no tests yet\"",
+    "lint": "happiness",
+    "unit": "echo \"no tests yet\"",
     "test": "npm run lint && npm run unit"
   },
   "keywords": [
