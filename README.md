@@ -1,7 +1,7 @@
 touchstonejs-tasks
 ==================
 
-### README out of date - please see #4 
+### README out of date - please see [#4](https://github.com/touchstonejs/touchstonejs-tasks/issues/4) 
 
 
 This package provides common gulp tasks for TouchstoneJS projects with:
