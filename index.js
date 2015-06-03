@@ -27,14 +27,18 @@ module.exports = function (gulp) {
 	function watchBundle (target, name, dest) {
 		return watchify(target)
 			.on('update', function (scriptIds) {
-				scriptIds = scriptIds
-				.filter(function (i) { return i.substr(0, 2) !== './' })
-				.map(function (i) { return chalk.blue(i.replace(__dirname, '')) });
+				scriptIds = scriptIds.filter(function (i) {
+					return i.substr(0, 2) !== './';
+				}).map(function (i) {
+					return chalk.blue(i.replace(__dirname, ''));
+				});
+
 				if (scriptIds.length > 1) {
 					gutil.log(scriptIds.length + ' Scripts updated:\n* ' + scriptIds.join('\n* ') + '\nrebuilding...');
 				} else {
 					gutil.log(scriptIds[0] + ' updated, rebuilding...');
 				}
+
 				doBundle(target, name, dest);
 			})
 			.on('time', function (time) {
@@ -99,7 +103,7 @@ module.exports = function (gulp) {
 	gulp.task('serve', function () {
 		var express = require('express');
 		var app = express();
-		var port = process.env.PORT || 8000
+		var port = process.env.PORT || 8000;
 
 		app.use(express.static('./www'));
 		app.listen(process.env.PORT || 8000, function () { console.log('Local Server ready on port %d', port); });
