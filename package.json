@@ -25,7 +25,7 @@
     "watchify": "^3.2.1"
   },
   "peerDependencies": {
-    "gulp": "^3.8.0"
+    "gulp": "^3.9.0"
   },
   "devDependencies": {
     "happiness": "*"
