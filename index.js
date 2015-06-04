@@ -17,9 +17,7 @@ var watchify = require('watchify');
 module.exports = function (gulp) {
 	function doBundle (target, name, dest) {
 		return target.bundle()
-			.on('error', function (e) {
-				gutil.log('Browserify Error', e.message);
-			})
+			.on('error', gutil.log.bind(gutil, 'Browserify Error'))
 			.pipe(source(name))
 			.pipe(gulp.dest(dest));
 	}
