@@ -76,17 +76,28 @@ module.exports = function (gulp) {
 		);
 	}
 
+	function plumb (src, pumps, dest) {
+		var stream = gulp.src(src);
+
+		pumps.forEach(function (pump) {
+			stream = stream.pipe(pump);
+		})
+
+		return stream.pipe(gulp.dest(dest))
+	}
+
 	// Build
-	gulp.task('fonts', function () { return gulp.src('src/fonts/**').pipe(gulp.dest('www/fonts')); });
-	gulp.task('html', function () { return gulp.src('src/index.html').pipe(gulp.dest('www')); });
-	gulp.task('images', function () { return gulp.src('src/img/**').pipe(gulp.dest('www/img')); });
-	gulp.task('less', function () { return gulp.src('src/css/app.less').pipe(less()).pipe(gulp.dest('www/css')); });
+	gulp.task('fonts', plumb.bind(null, 'src/fonts/**', [], 'www/fonts'));
+	gulp.task('html', plumb.bind(null, 'src/index.html', [], 'www'));
+	gulp.task('images', plumb.bind(null, 'src/img/**', [], 'www/img'));
+	gulp.task('less', plumb.bind(null, 'src/css/app.less', [less()], 'www/css'));
 	gulp.task('scripts', function () { return buildApp(); });
 	gulp.task('watch-scripts', function () { return buildApp(true); });
 
-	gulp.task('build', ['html', 'images', 'fonts', 'less', 'scripts']);
 	gulp.task('clean', function () { return del(['./www/*']); });
-	gulp.task('watch', ['html', 'images', 'fonts', 'less', 'watch-scripts'], function () {
+	gulp.task('build-assets', ['html', 'images', 'fonts', 'less']);
+	gulp.task('build', ['build-assets', 'scripts']);
+	gulp.task('watch', ['build-assets', 'watch-scripts'], function () {
 		gulp.watch(['src/index.html'], ['html']);
 		gulp.watch(['src/css/**/*.less'], ['less']);
 		gulp.watch(['src/img/**/*.*'], ['images']);
@@ -107,7 +118,7 @@ module.exports = function (gulp) {
 	gulp.task('dev', ['watch', 'serve']);
 
 	// Cordova
-	gulp.task('prepare', ['html', 'images', 'fonts', 'less', 'scripts'], function () {
+	gulp.task('prepare', ['build'], function () {
 		return gulp.src('').pipe(plumber()).pipe(shell(['cordova prepare'], { cwd: __dirname }));
 	});
 };
