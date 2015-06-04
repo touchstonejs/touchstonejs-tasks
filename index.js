@@ -78,11 +78,6 @@ module.exports = function (gulp) {
 		);
 	}
 
-	// Clean
-	gulp.task('clean', function () {
-		del(['./www/*']);
-	});
-
 	// Build
 	gulp.task('fonts', function () { return gulp.src('src/fonts/**').pipe(gulp.dest('www/fonts')); });
 	gulp.task('html', function () { return gulp.src('src/index.html').pipe(gulp.dest('www')); });
@@ -92,6 +87,7 @@ module.exports = function (gulp) {
 	gulp.task('watch-scripts', function () { return buildApp(true); });
 
 	gulp.task('build', ['html', 'images', 'fonts', 'less', 'scripts']);
+	gulp.task('clean', function () { return del(['./www/*']); });
 	gulp.task('watch', ['html', 'images', 'fonts', 'less', 'watch-scripts'], function () {
 		gulp.watch(['src/index.html'], ['html']);
 		gulp.watch(['src/css/**/*.less'], ['less']);
