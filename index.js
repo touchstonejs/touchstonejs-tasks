@@ -98,7 +98,7 @@ module.exports = function (gulp) {
 
 	// Development
 	gulp.task('serve', function () {
-		return connect.server({
+		connect.server({
 			root: 'www',
 			port: 8000,
 			livereload: true
