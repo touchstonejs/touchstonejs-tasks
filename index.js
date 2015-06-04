@@ -41,14 +41,18 @@ module.exports = function (gulp) {
 			});
 	}
 
-	function buildApp (entries, dest, watch) {
+	function buildApp (entries, transforms, dest, watch) {
 		var opts = xtend(watch && watchify.args, {
 			entries: entries,
 			debug: process.env.NODE_ENV !== 'production'
 		});
 
-		var app = browserify(opts).transform(babelify).transform(brfs);
+		var app = browserify(opts)
 		var react = browserify();
+
+		transforms.forEach(function (target) {
+			app.transform(target)
+		});
 
 		['react', 'react/addons'].forEach(function (pkg) {
 			app.exclude(pkg);
@@ -59,10 +63,7 @@ module.exports = function (gulp) {
 			watchBundle(app, 'app.js', dest);
 		}
 
-		return merge(
-			bundler(react, 'react.js', dest),
-			bundler(app, 'app.js', dest)
-		);
+		return merge(bundler(react, 'react.js', dest), bundler(app, 'app.js', dest));
 	}
 
 	function plumb (src, pumps, dest) {
@@ -80,8 +81,8 @@ module.exports = function (gulp) {
 	gulp.task('html', plumb.bind(null, 'src/index.html', [], 'www'));
 	gulp.task('images', plumb.bind(null, 'src/img/**', [], 'www/img'));
 	gulp.task('less', plumb.bind(null, 'src/css/app.less', [less()], 'www/css'));
-	gulp.task('scripts', buildApp.bind(null, ['./src/js/app.js'], './www/js'));
-	gulp.task('scripts-watch', buildApp.bind(null, ['./src/js/app.js'], './www/js', true));
+	gulp.task('scripts', buildApp.bind(null, ['./src/js/app.js'], [babelify, brfs], './www/js'));
+	gulp.task('scripts-watch', buildApp.bind(null, ['./src/js/app.js'], [babelify, brfs], './www/js', true));
 
 	gulp.task('clean', function () { return del(['./www/*']); });
 	gulp.task('build-assets', ['html', 'images', 'fonts', 'less']);
