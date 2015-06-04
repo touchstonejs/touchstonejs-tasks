@@ -10,6 +10,7 @@ var plumber = require('gulp-plumber');
 var shell = require('gulp-shell');
 var source = require('vinyl-source-stream');
 var watchify = require('watchify');
+var xtend = require('xtend');
 
 /**
  * This package exports a function that binds tasks to a gulp instance
@@ -44,21 +45,19 @@ module.exports = function (gulp) {
 			});
 	}
 
-	function buildApp (dev) {
+	function buildApp (watch) {
 		var src = './src/js';
 		var dest = './www/js';
 		var name = 'app.js';
 
-		var opts = dev ? {
-			cache: {},
-			packageCache: {},
+		var opts = xtend(watch && watchify.args, {
 			debug: process.env.NODE_ENV !== 'production'
-		} : {};
+		});
+
 		var appBundle = browserify(opts)
 			.add([src, name].join('/'))
 			.transform(babelify)
 			.transform(brfs);
-
 		var reactBundle = browserify();
 
 		['react', 'react/addons'].forEach(function (pkg) {
@@ -66,7 +65,7 @@ module.exports = function (gulp) {
 			reactBundle.require(pkg);
 		});
 
-		if (dev) {
+		if (watch) {
 			watchBundle(appBundle, name, dest);
 		}
 
