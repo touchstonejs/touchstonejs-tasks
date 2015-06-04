@@ -12,66 +12,56 @@ var source = require('vinyl-source-stream');
 var watchify = require('watchify');
 var xtend = require('xtend');
 
-/**
- * This package exports a function that binds tasks to a gulp instance
- */
 module.exports = function (gulp) {
-	function doBundle (target, name, dest) {
+	function bundler (target, name, dest) {
 		return target.bundle()
 			.on('error', gutil.log.bind(gutil, 'Browserify Error'))
 			.pipe(source(name))
 			.pipe(gulp.dest(dest));
 	}
 
-	function watchBundle (target, name, dest) {
-		return watchify(target)
-			.on('update', function (scriptIds) {
-				scriptIds = scriptIds.filter(function (i) {
-					return i.substr(0, 2) !== './';
-				}).map(function (i) {
+	function watchBundle (bundle, name, dest) {
+		return watchify(bundle)
+			.on('log', gutil.log)
+			.on('update', function (ids) {
+				var changed = ids.map(function (i) {
 					return chalk.blue(i.replace(__dirname, ''));
 				});
 
-				if (scriptIds.length > 1) {
-					gutil.log(scriptIds.length + ' Scripts updated:\n* ' + scriptIds.join('\n* ') + '\nrebuilding...');
+				if (changed.length > 1) {
+					gutil.log(changed.length + ' scripts updated:\n* ' + changed.join('\n* ') + '\nrebuilding...');
 				} else {
-					gutil.log(scriptIds[0] + ' updated, rebuilding...');
+					gutil.log(changed[0] + ' updated, rebuilding...');
 				}
 
-				doBundle(target, name, dest);
+				bundler(bundle, name, dest)
 			})
 			.on('time', function (time) {
-				gutil.log(chalk.green(name + ' built in ' + (Math.round(time / 10) / 100) + 's'));
+				gutil.log(chalk.green('Application built in ' + (Math.round(time / 10) / 100) + 's'));
 			});
 	}
 
-	function buildApp (watch) {
-		var src = './src/js';
-		var dest = './www/js';
-		var name = 'app.js';
-
+	function buildApp (entries, dest, watch) {
 		var opts = xtend(watch && watchify.args, {
+			entries: entries,
 			debug: process.env.NODE_ENV !== 'production'
 		});
 
-		var appBundle = browserify(opts)
-			.add([src, name].join('/'))
-			.transform(babelify)
-			.transform(brfs);
-		var reactBundle = browserify();
+		var app = browserify(opts).transform(babelify).transform(brfs);
+		var react = browserify();
 
 		['react', 'react/addons'].forEach(function (pkg) {
-			appBundle.exclude(pkg);
-			reactBundle.require(pkg);
+			app.exclude(pkg);
+			react.require(pkg);
 		});
 
 		if (watch) {
-			watchBundle(appBundle, name, dest);
+			watchBundle(app, 'app.js', dest);
 		}
 
 		return merge(
-			doBundle(reactBundle, 'react.js', dest),
-			doBundle(appBundle, name, dest)
+			bundler(react, 'react.js', dest),
+			bundler(app, 'app.js', dest)
 		);
 	}
 
@@ -90,13 +80,13 @@ module.exports = function (gulp) {
 	gulp.task('html', plumb.bind(null, 'src/index.html', [], 'www'));
 	gulp.task('images', plumb.bind(null, 'src/img/**', [], 'www/img'));
 	gulp.task('less', plumb.bind(null, 'src/css/app.less', [less()], 'www/css'));
-	gulp.task('scripts', function () { return buildApp(); });
-	gulp.task('watch-scripts', function () { return buildApp(true); });
+	gulp.task('scripts', function () { return buildApp(['./src/js/app.js'], './www/js'); })
+	gulp.task('scripts-watch', function () { return buildApp(['./src/js/app.js'], './www/js', true); })
 
 	gulp.task('clean', function () { return del(['./www/*']); });
 	gulp.task('build-assets', ['html', 'images', 'fonts', 'less']);
 	gulp.task('build', ['build-assets', 'scripts']);
-	gulp.task('watch', ['build-assets', 'watch-scripts'], function () {
+	gulp.task('watch', ['build-assets', 'scripts-watch'], function () {
 		gulp.watch(['src/index.html'], ['html']);
 		gulp.watch(['src/css/**/*.less'], ['less']);
 		gulp.watch(['src/img/**/*.*'], ['images']);
