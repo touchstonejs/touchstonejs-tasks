@@ -2,6 +2,7 @@ var babelify = require('babelify');
 var brfs = require('brfs');
 var browserify = require('browserify');
 var chalk = require('chalk');
+var connect = require('gulp-connect');
 var del = require('del');
 var gutil = require('gulp-util');
 var less = require('gulp-less');
@@ -13,19 +14,23 @@ var watchify = require('watchify');
 var xtend = require('xtend');
 
 module.exports = function (gulp) {
-	function bundler (target, name, dest) {
+	function doBundle (target, name, dest) {
 		return target.bundle()
 			.on('error', gutil.log.bind(gutil, 'Browserify Error'))
 			.pipe(source(name))
-			.pipe(gulp.dest(dest));
+			.pipe(gulp.dest(dest))
+			.pipe(connect.reload());
 	}
 
 	function watchBundle (bundle, name, dest) {
 		return watchify(bundle)
-			.on('log', gutil.log)
+			.on('log', function (message) { gutil.log(chalk.grey(message)); })
+			.on('time', function (time) {
+				gutil.log(chalk.green('Application built in ' + (Math.round(time / 10) / 100) + 's'));
+			})
 			.on('update', function (ids) {
-				var changed = ids.map(function (i) {
-					return chalk.blue(i.replace(__dirname, ''));
+				var changed = ids.map(function (x) {
+					return chalk.blue(x.replace(__dirname, ''));
 				});
 
 				if (changed.length > 1) {
@@ -34,10 +39,7 @@ module.exports = function (gulp) {
 					gutil.log(changed[0] + ' updated, rebuilding...');
 				}
 
-				bundler(bundle, name, dest)
-			})
-			.on('time', function (time) {
-				gutil.log(chalk.green('Application built in ' + (Math.round(time / 10) / 100) + 's'));
+				doBundle(bundle, name, dest);
 			});
 	}
 
@@ -47,11 +49,11 @@ module.exports = function (gulp) {
 			debug: process.env.NODE_ENV !== 'production'
 		});
 
-		var app = browserify(opts)
+		var app = browserify(opts);
 		var react = browserify();
 
 		transforms.forEach(function (target) {
-			app.transform(target)
+			app.transform(target);
 		});
 
 		['react', 'react/addons'].forEach(function (pkg) {
@@ -63,7 +65,7 @@ module.exports = function (gulp) {
 			watchBundle(app, 'app.js', dest);
 		}
 
-		return merge(bundler(react, 'react.js', dest), bundler(app, 'app.js', dest));
+		return merge(doBundle(react, 'react.js', dest), doBundle(app, 'app.js', dest));
 	}
 
 	function plumb (src, pumps, dest) {
@@ -71,9 +73,9 @@ module.exports = function (gulp) {
 
 		pumps.forEach(function (pump) {
 			stream = stream.pipe(pump);
-		})
+		});
 
-		return stream.pipe(gulp.dest(dest))
+		return stream.pipe(gulp.dest(dest)).pipe(connect.reload());
 	}
 
 	// Build
@@ -94,18 +96,16 @@ module.exports = function (gulp) {
 		gulp.watch(['src/fonts/**/*.*'], ['fonts']);
 	});
 
-	// Local HTTP Server
+	// Development
 	gulp.task('serve', function () {
-		var express = require('express');
-		var app = express();
-		var port = process.env.PORT || 8000;
-
-		app.use(express.static('./www'));
-		app.listen(process.env.PORT || 8000, function () { console.log('Local Server ready on port %d', port); });
+		return connect.server({
+			root: 'www',
+			port: 8000,
+			livereload: true
+		});
 	});
 
-	// Development
-	gulp.task('dev', ['watch', 'serve']);
+	gulp.task('dev', ['serve', 'watch']);
 
 	// Cordova
 	gulp.task('prepare', ['build'], function () {
