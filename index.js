@@ -68,11 +68,11 @@ module.exports = function (gulp) {
 		return merge(doBundle(react, 'react.js', dest), doBundle(app, 'app.js', dest));
 	}
 
-	function plumb (src, pumps, dest) {
+	function plumb (src, transforms, dest) {
 		var stream = gulp.src(src);
 
-		pumps.forEach(function (pump) {
-			stream = stream.pipe(pump());
+		transforms.forEach(function (transform) {
+			stream = stream.pipe(transform());
 		});
 
 		return stream.pipe(gulp.dest(dest)).pipe(connect.reload());
