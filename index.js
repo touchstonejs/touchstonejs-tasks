@@ -72,7 +72,7 @@ module.exports = function (gulp) {
 		var stream = gulp.src(src);
 
 		pumps.forEach(function (pump) {
-			stream = stream.pipe(pump);
+			stream = stream.pipe(pump());
 		});
 
 		return stream.pipe(gulp.dest(dest)).pipe(connect.reload());
@@ -82,7 +82,7 @@ module.exports = function (gulp) {
 	gulp.task('fonts', plumb.bind(null, 'src/fonts/**', [], 'www/fonts'));
 	gulp.task('html', plumb.bind(null, 'src/index.html', [], 'www'));
 	gulp.task('images', plumb.bind(null, 'src/img/**', [], 'www/img'));
-	gulp.task('less', plumb.bind(null, 'src/css/app.less', [less()], 'www/css'));
+	gulp.task('less', plumb.bind(null, 'src/css/app.less', [less], 'www/css'));
 	gulp.task('scripts', buildApp.bind(null, ['./src/js/app.js'], [babelify, brfs], './www/js'));
 	gulp.task('scripts-watch', buildApp.bind(null, ['./src/js/app.js'], [babelify, brfs], './www/js', true));
 
