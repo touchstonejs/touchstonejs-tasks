@@ -16,7 +16,12 @@ var xtend = require('xtend');
 module.exports = function (gulp) {
 	function doBundle (target, name, dest) {
 		return target.bundle()
-			.on('error', gutil.log.bind(gutil, 'Browserify Error'))
+			.on('error', function(err) {
+				var parts = err.message.split('.js: ');
+				var br = '\n           ';
+				var msg = parts.length === 2 ? chalk.red('Browserify Error in ') + chalk.red.underline(parts[0] + '.js') + br + parts[1] : chalk.red('Browserify Error:') + br + err.message;
+				gutil.log(msg);
+			})
 			.pipe(source(name))
 			.pipe(gulp.dest(dest))
 			.pipe(connect.reload());
