@@ -1,6 +1,6 @@
 {
   "name": "touchstonejs-tasks",
-  "version": "0.2.3",
+  "version": "0.2.4",
   "description": "Gulp Build Tasks for TouchstoneJS Projects",
   "main": "index.js",
   "author": "Jed Watson",
