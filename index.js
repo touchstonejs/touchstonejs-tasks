@@ -1,6 +1,7 @@
 var babelify = require('babelify');
 var brfs = require('brfs');
 var browserify = require('browserify');
+var bytes = require('bytes');
 var chalk = require('chalk');
 var connect = require('gulp-connect');
 var del = require('del');
@@ -29,7 +30,12 @@ module.exports = function (gulp) {
 
 	function watchBundle (bundle, name, dest) {
 		return watchify(bundle)
-			.on('log', function (message) { gutil.log(chalk.grey(message)); })
+			.on('log', function (message) {
+				message = message.replace(/(\d+) bytes/, function() {
+					return bytes.format(Number(arguments[1]));
+				});
+				gutil.log(chalk.grey(message));
+			})
 			.on('time', function (time) {
 				gutil.log(chalk.green('Application built in ' + (Math.round(time / 10) / 100) + 's'));
 			})
