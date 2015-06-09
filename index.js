@@ -78,13 +78,17 @@ module.exports = function (gulp) {
 		return stream.pipe(gulp.dest(dest)).pipe(connect.reload());
 	}
 
+	var babelifyTransform = babelify.configure({
+		plugins: [require('babel-plugin-object-assign')]
+	});
+
 	// Build
 	gulp.task('fonts', plumb.bind(null, 'src/fonts/**', [], 'www/fonts'));
 	gulp.task('html', plumb.bind(null, 'src/index.html', [], 'www'));
 	gulp.task('images', plumb.bind(null, 'src/img/**', [], 'www/img'));
 	gulp.task('less', plumb.bind(null, 'src/css/app.less', [less], 'www/css'));
-	gulp.task('scripts', buildApp.bind(null, ['./src/js/app.js'], [babelify, brfs], './www/js'));
-	gulp.task('scripts-watch', buildApp.bind(null, ['./src/js/app.js'], [babelify, brfs], './www/js', true));
+	gulp.task('scripts', buildApp.bind(null, ['./src/js/app.js'], [babelifyTransform, brfs], './www/js'));
+	gulp.task('scripts-watch', buildApp.bind(null, ['./src/js/app.js'], [babelifyTransform, brfs], './www/js', true));
 
 	gulp.task('clean', function () { return del(['./www/*']); });
 	gulp.task('build-assets', ['html', 'images', 'fonts', 'less']);
