@@ -8,8 +8,6 @@ var del = require('del');
 var gutil = require('gulp-util');
 var less = require('gulp-less');
 var merge = require('merge-stream');
-var plumber = require('gulp-plumber');
-var shell = require('gulp-shell');
 var source = require('vinyl-source-stream');
 var watchify = require('watchify');
 var xtend = require('xtend');
@@ -121,9 +119,4 @@ module.exports = function (gulp) {
 	});
 
 	gulp.task('dev', ['serve', 'watch']);
-
-	// Cordova
-	gulp.task('prepare', ['build'], function () {
-		return gulp.src('').pipe(plumber()).pipe(shell(['cordova prepare'], { cwd: __dirname }));
-	});
 };
