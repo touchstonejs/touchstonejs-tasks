@@ -17,7 +17,7 @@ var xtend = require('xtend');
 module.exports = function (gulp) {
 	function doBundle (target, name, dest) {
 		return target.bundle()
-			.on('error', function(err) {
+			.on('error', function (err) {
 				var parts = err.message.split('.js: ');
 				var br = '\n           ';
 				var msg = parts.length === 2 ? chalk.red('Browserify Error in ') + chalk.red.underline(parts[0] + '.js') + br + parts[1] : chalk.red('Browserify Error:') + br + err.message;
@@ -31,7 +31,7 @@ module.exports = function (gulp) {
 	function watchBundle (bundle, name, dest) {
 		return watchify(bundle)
 			.on('log', function (message) {
-				message = message.replace(/(\d+) bytes/, function() {
+				message = message.replace(/(\d+) bytes/, function () {
 					return bytes.format(Number(arguments[1]));
 				});
 				gutil.log(chalk.grey(message));
