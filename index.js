@@ -98,7 +98,7 @@ module.exports = function (gulp) {
 
 	// Build
 	gulp.task('fonts', plumb.bind(null, 'src/fonts/**', [], wwwDir + '/fonts'));
-	gulp.task('html', plumb.bind(null, 'src/index.html', [], wwwDir));
+	gulp.task('html', plumb.bind(null, 'src/*.html', [], wwwDir));
 	gulp.task('images', plumb.bind(null, 'src/img/**', [], wwwDir + '/img'));
 	gulp.task('less', plumb.bind(null, 'src/css/app.less', [less], wwwDir + '/css'));
 	gulp.task('scripts', buildApp.bind(null, ['./src/js/app.js'], [babelifyTransform, brfs], wwwDir + '/js', false));
