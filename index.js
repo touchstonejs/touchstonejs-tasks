@@ -13,6 +13,8 @@ var watchify = require('watchify');
 var xtend = require('xtend');
 
 module.exports = function (gulp) {
+	var wwwDir = './www'
+
 	function doBundle (target, name, dest) {
 		return target.bundle()
 			.on('error', function (err) {
@@ -38,12 +40,11 @@ module.exports = function (gulp) {
 				gutil.log(chalk.green('Application built in ' + (Math.round(time / 10) / 100) + 's'));
 			})
 			.on('update', function (ids) {
-				var changed = ids.map(function (x) {
-					return chalk.blue(x.replace(__dirname, ''));
-				});
+				var changed = ids.map(function (x) { return chalk.blue(x.replace(__dirname, '')); });
 
 				if (changed.length > 1) {
 					gutil.log(changed.length + ' scripts updated:\n* ' + changed.join('\n* ') + '\nrebuilding...');
+
 				} else {
 					gutil.log(changed[0] + ' updated, rebuilding...');
 				}
@@ -96,28 +97,28 @@ module.exports = function (gulp) {
 	});
 
 	// Build
-	gulp.task('fonts', plumb.bind(null, 'src/fonts/**', [], 'www/fonts'));
-	gulp.task('html', plumb.bind(null, 'src/index.html', [], 'www'));
-	gulp.task('images', plumb.bind(null, 'src/img/**', [], 'www/img'));
-	gulp.task('less', plumb.bind(null, 'src/css/app.less', [less], 'www/css'));
-	gulp.task('scripts', buildApp.bind(null, ['./src/js/app.js'], [babelifyTransform, brfs], './www/js', false));
-	gulp.task('scripts-watch', buildApp.bind(null, ['./src/js/app.js'], [babelifyTransform, brfs], './www/js', true));
+	gulp.task('fonts', plumb.bind(null, 'src/fonts/**', [], wwwDir + '/fonts'));
+	gulp.task('html', plumb.bind(null, 'src/index.html', [], wwwDir));
+	gulp.task('images', plumb.bind(null, 'src/img/**', [], wwwDir + '/img'));
+	gulp.task('less', plumb.bind(null, 'src/css/app.less', [less], wwwDir + '/css'));
+	gulp.task('scripts', buildApp.bind(null, ['./src/js/app.js'], [babelifyTransform, brfs], wwwDir + '/js', false));
+	gulp.task('build', ['html', 'images', 'fonts', 'less', 'scripts']);
 
-	gulp.task('clean', function () { return del(['./www/*']); });
-	gulp.task('build-assets', ['html', 'images', 'fonts', 'less']);
-	gulp.task('build', ['build-assets', 'scripts']);
-	gulp.task('watch', ['build-assets', 'scripts-watch'], function () {
-		gulp.watch(['src/index.html'], ['html']);
-		gulp.watch(['src/js/**/*.js'], ['js']);
-		gulp.watch(['src/css/**/*.less'], ['less']);
-		gulp.watch(['src/img/**/*.*'], ['images']);
-		gulp.watch(['src/fonts/**/*.*'], ['fonts']);
-	});
+	// Clean
+	gulp.task('clean', function () { return del([wwwDir + '/*']); });
 
 	// Development
+	gulp.task('scripts-watch', buildApp.bind(null, ['./src/js/app.js'], [babelifyTransform, brfs], wwwDir + '/js', true));
+	gulp.task('watch', ['html', 'images', 'fonts', 'less', 'scripts-watch'], function () {
+		gulp.watch(['src/*.html'], ['html']);
+		gulp.watch(['src/img/**/*.*'], ['images']);
+		gulp.watch(['src/fonts/**/*.*'], ['fonts']);
+		gulp.watch(['src/css/**/*.less'], ['less']);
+	});
+
 	gulp.task('serve', function () {
 		connect.server({
-			root: 'www',
+			root: wwwDir,
 			port: 8000,
 			livereload: true
 		});
