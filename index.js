@@ -61,8 +61,8 @@ module.exports = function (gulp) {
 		var app = browserify(opts);
 		var react = browserify();
 
-		transforms.forEach(function (target) {
-			app.transform(target);
+		transforms.forEach(function (transform) {
+			app.transform(transform);
 		});
 
 		['react', 'react/addons'].forEach(function (pkg) {
@@ -96,7 +96,7 @@ module.exports = function (gulp) {
 	gulp.task('html', plumb.bind(null, 'src/index.html', [], 'www'));
 	gulp.task('images', plumb.bind(null, 'src/img/**', [], 'www/img'));
 	gulp.task('less', plumb.bind(null, 'src/css/app.less', [less], 'www/css'));
-	gulp.task('scripts', buildApp.bind(null, ['./src/js/app.js'], [babelifyTransform, brfs], './www/js'));
+	gulp.task('scripts', buildApp.bind(null, ['./src/js/app.js'], [babelifyTransform, brfs], './www/js', false));
 	gulp.task('scripts-watch', buildApp.bind(null, ['./src/js/app.js'], [babelifyTransform, brfs], './www/js', true));
 
 	gulp.task('clean', function () { return del(['./www/*']); });
@@ -104,6 +104,7 @@ module.exports = function (gulp) {
 	gulp.task('build', ['build-assets', 'scripts']);
 	gulp.task('watch', ['build-assets', 'scripts-watch'], function () {
 		gulp.watch(['src/index.html'], ['html']);
+		gulp.watch(['src/js/**/*.js'], ['js']);
 		gulp.watch(['src/css/**/*.less'], ['less']);
 		gulp.watch(['src/img/**/*.*'], ['images']);
 		gulp.watch(['src/fonts/**/*.*'], ['fonts']);
