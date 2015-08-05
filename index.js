@@ -84,7 +84,11 @@ module.exports = function (gulp) {
 			stream = stream.pipe(transform());
 		});
 
-		return stream.pipe(gulp.dest(dest)).pipe(connect.reload());
+		if (dest) {
+			stream = stream.pipe(gulp.dest(dest))
+		}
+
+		return stream.pipe(connect.reload());
 	}
 
 	var babelifyTransform = babelify.configure({
