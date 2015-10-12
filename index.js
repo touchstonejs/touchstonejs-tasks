@@ -13,7 +13,7 @@ var watchify = require('watchify');
 var xtend = require('xtend');
 
 module.exports = function (gulp) {
-	var wwwDir = './www'
+	var wwwDir = './www';
 
 	function doBundle (target, name, dest) {
 		return target.bundle()
@@ -86,7 +86,7 @@ module.exports = function (gulp) {
 		});
 
 		if (dest) {
-			stream = stream.pipe(gulp.dest(dest))
+			stream = stream.pipe(gulp.dest(dest));
 		}
 
 		return stream.pipe(connect.reload());
@@ -100,19 +100,21 @@ module.exports = function (gulp) {
 	gulp.task('fonts', plumb.bind(null, 'src/fonts/**', [], wwwDir + '/fonts'));
 	gulp.task('html', plumb.bind(null, 'src/*.html', [], wwwDir));
 	gulp.task('images', plumb.bind(null, 'src/img/**', [], wwwDir + '/img'));
+	gulp.task('css', plumb.bind(null, 'src/css/*.css', [], wwwDir + '/css'));
 	gulp.task('less', plumb.bind(null, 'src/css/app.less', [less], wwwDir + '/css'));
 	gulp.task('scripts', buildApp.bind(null, ['./src/js/app.js'], [babelifyTransform, brfs], wwwDir + '/js', false));
-	gulp.task('build', ['html', 'images', 'fonts', 'less', 'scripts']);
+	gulp.task('build', ['html', 'images', 'fonts', 'css', 'less', 'scripts']);
 
 	// Clean
 	gulp.task('clean', function () { return del([wwwDir + '/*']); });
 
 	// Development
 	gulp.task('scripts-watch', buildApp.bind(null, ['./src/js/app.js'], [babelifyTransform, brfs], wwwDir + '/js', true));
-	gulp.task('watch', ['html', 'images', 'fonts', 'less', 'scripts-watch'], function () {
+	gulp.task('watch', ['html', 'images', 'fonts', 'css', 'less', 'scripts-watch'], function () {
 		gulp.watch(['src/*.html'], ['html']);
 		gulp.watch(['src/img/**/*.*'], ['images']);
 		gulp.watch(['src/fonts/**/*.*'], ['fonts']);
+		gulp.watch(['src/css/**/*.css'], ['css']);
 		gulp.watch(['src/css/**/*.less'], ['less']);
 	});
 
