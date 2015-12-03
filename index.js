@@ -12,6 +12,17 @@ var source = require('vinyl-source-stream');
 var watchify = require('watchify');
 var xtend = require('xtend');
 
+var COMMON_PACKAGES = [
+	'blacklist',
+	'classnames',
+	'react-addons-css-transition-group',
+	'react-container',
+	'react-dom',
+	'react-tappable',
+	'react',
+	'tween.js',
+];
+
 module.exports = function (gulp) {
 	var wwwDir = './www';
 
@@ -66,7 +77,7 @@ module.exports = function (gulp) {
 			app.transform(transform);
 		});
 
-		['react', 'react-dom'].forEach(function (pkg) {
+		COMMON_PACKAGES.forEach(function (pkg) {
 			app.exclude(pkg);
 			react.require(pkg);
 		});
