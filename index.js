@@ -66,7 +66,7 @@ module.exports = function (gulp) {
 			app.transform(transform);
 		});
 
-		['react', 'react/addons'].forEach(function (pkg) {
+		['react', 'react-dom'].forEach(function (pkg) {
 			app.exclude(pkg);
 			react.require(pkg);
 		});
