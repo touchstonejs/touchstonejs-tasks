@@ -13,14 +13,11 @@ var watchify = require('watchify');
 var xtend = require('xtend');
 
 var COMMON_PACKAGES = [
-	'blacklist',
-	'classnames',
 	'react-addons-css-transition-group',
 	'react-container',
 	'react-dom',
 	'react-tappable',
 	'react',
-	'tween.js',
 ];
 
 module.exports = function (gulp) {
