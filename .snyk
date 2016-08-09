@@ -1,0 +1,8 @@
+version: v1.5.0
+ignore: {}
+patch:
+  'npm:negotiator:20160616':
+    - gulp-connect > connect > compression > accepts > negotiator:
+        patched: '2016-08-09T02:42:42.852Z'
+    - gulp-connect > connect > serve-index > accepts > negotiator:
+        patched: '2016-08-09T02:42:42.852Z'

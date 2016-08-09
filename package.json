@@ -10,11 +10,11 @@
     "url": "https://github.com/JedWatson/touchstonejs-tasks.git"
   },
   "dependencies": {
-    "babel-core": "^5.5.5",
+    "babel-core": "6.10.4",
     "babel-plugin-object-assign": "^1.1.0",
-    "babelify": "^6.1.2",
+    "babelify": "7.0.0",
     "brfs": "^1.4.0",
-    "browserify": "^10.2.4",
+    "browserify": "12.0.0",
     "bytes": "^2.1.0",
     "chalk": "^1.0.0",
     "del": "^1.2.0",
@@ -24,7 +24,8 @@
     "merge-stream": "^0.1.7",
     "vinyl-source-stream": "^1.1.0",
     "watchify": "^3.2.2",
-    "xtend": "^4.0.0"
+    "xtend": "^4.0.0",
+    "snyk": "^1.18.0"
   },
   "peerDependencies": {
     "gulp": "^3.9.0"
@@ -35,11 +36,14 @@
   "scripts": {
     "lint": "happiness",
     "unit": "echo \"no tests yet\"",
-    "test": "npm run lint && npm run unit"
+    "test": "npm run lint && npm run unit",
+    "snyk-protect": "snyk protect",
+    "prepublish": "npm run snyk-protect"
   },
   "keywords": [
     "react",
     "browserify",
     "gulp"
-  ]
+  ],
+  "snyk": true
 }
